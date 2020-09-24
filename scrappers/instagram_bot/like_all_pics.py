@@ -3,6 +3,7 @@ import chromedriver_binary  # Adds chromedriver binary to path
 import time
 import re
 from instagram_bot import InstagramBot
+# Given a person url like all his/hers pictures
 # TODO find a safe way to store the password and email
 
 USERNAME = ""
