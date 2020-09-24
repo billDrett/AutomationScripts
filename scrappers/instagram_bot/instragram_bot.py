@@ -1,6 +1,7 @@
 from selenium import webdriver
 import chromedriver_binary  # Adds chromedriver binary to path
 import time
+import re
 
 # find who doesn't follow back
 # TODO find a safe way to store the password and email
@@ -10,19 +11,19 @@ PASSWORD = ""
 
 
 class InstagramBot:
-    def __init__(self, username, password):
+    def __init__(self, driver, username, password):
         self.username = username
         self.password = password
-        self.driver = webdriver.Chrome()
-        self.driver.get("https://www.instagram.com/")
-        time.sleep(3)
+        self.driver = driver
 
+    def find_not_follow_back_people(self):
         self.go_to_personal_profile()
         follower_names, following_names = self.find_followers_and_followies()
         not_follow_back_names = [
             following for following in following_names if following not in follower_names]
-        print(not_follow_back_names)
+        return not_follow_back_names
 
+    #private methods
     def go_to_personal_profile(self):
         self.go_to_default_screen()
         self.click_profile_pic()
@@ -109,4 +110,10 @@ class InstagramBot:
         return names
 
 
-InstagramBot(USERNAME, PASSWORD)
+driver = webdriver.Chrome()
+driver.get("https://www.instagram.com/")
+time.sleep(3)
+
+instagram_bot = InstagramBot(driver, USERNAME, PASSWORD)
+instagram_bot.go_to_default_screen()
+print(instagram_bot.find_not_follow_back_people()())
