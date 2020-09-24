@@ -10,14 +10,18 @@ USERNAME = ""
 PASSWORD = ""
 PERSON_URL = "https://www.instagram.com/someone/"
 
-def scroll_to_buttom_of_screen(driver):
+def scroll_to_buttom_of_screen_and_get_pics_url(driver):
+    photo_urls = set()
     last_height, height = 0, 1
     while last_height != height:
         last_height = height
-        time.sleep(1)
         height = driver.execute_script('''window.scrollBy(0,document.body.scrollHeight)
                         return document.body.scrollHeight;''')
+        time.sleep(1)
         print("height is {}".format(height))
+        #must retrieve all photos while scrolling because the photos can disappear while scrolling down
+        photo_urls.update(get_all_pics_of_profile(driver))
+    return photo_urls
 
 def get_all_pics_of_profile(driver):
     all_links_tags = driver.find_elements_by_tag_name('a')
@@ -25,7 +29,7 @@ def get_all_pics_of_profile(driver):
     photo_urls = []
     for photo_url in all_urls:
         #photo urls start have a url /p/
-        founded = re.findall('/p/\w+/$', photo_url)
+        founded = re.findall('/p/\w+', photo_url)
         
         if len(founded) > 0:
             photo_urls.append(photo_url)
@@ -52,8 +56,7 @@ instagram_bot.login_to_profile()
 driver.get(PERSON_URL)
 time.sleep(2)
 
-scroll_to_buttom_of_screen(driver)
-photo_urls = get_all_pics_of_profile(driver)
+photo_urls = scroll_to_buttom_of_screen_and_get_pics_url(driver)
 like_all_photos(driver, photo_urls)
 
 
